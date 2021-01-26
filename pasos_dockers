@@ -1,17 +1,18 @@
 INSTALAR DOCKER: https://docs.docker.com/engine/install/ubuntu/
 
+docker network create my_bridge
 
-curl -i http://localhost:8086/query --data-urlencode "q=CREATE DATABASE test"
+docker run -p 8086:8086 --name=influxdb --net=my_bridge influxdb
 
-sudo curl -i 'http://localhost:8086/write?db=prueba1' --data-binary 'cliente,dni="1111111A",nombre="Fernando" apellidos="Vallejo"'
+curl -i http://localhost:8086/query --data-urlencode "q=CREATE DATABASE prototipo"
 
 Hasta donde llega la última coma son los tags. Después están los fields. (Los fields solo nos deja meter 2, por qué)
 ---------------------------------------------------------------------------------------------------------------------
-sudo curl -i 'http://localhost:8086/write?db=prueba2' --data-binary 'nodoIoT,dniCliente="1111111A",nombre="Fernando",apellidos="Vallejo" edad=5'
+sudo curl -i 'http://localhost:8086/write?db=prototipo' --data-binary 'nodoIoT,dniCliente="1111111A",nombre="Fernando",apellidos="Vallejo",temperatura=20 calidadAire=20'
 
-sudo curl -i 'http://localhost:8086/write?db=prueba2' --data-binary 'nodoIoT,dniCliente="1111111A",nombre="Fernando",apellidos="Vallejo",temperatura=20 calidadAire=20'
+docker run -p 2883:1883 --name=broker --net=my_bridge eclipse-mosquitto
 
+docker run -v /home/fernando/Escritorio/Master/SCF/repo/scf-prototipo/confs/telegraf.conf:/etc/telegraf/telegraf.conf --net=my_bridge --name=telegraf telegraf
 
-
-sudo docker run -v /home/jorgemm7/Documentos/GitKraken/scf-prototipo/confs/telegraf.conf:/etc/telegraf/telegraf.conf--net=mybridge --name=telegraf nodoIoT
+docker run -p 3000:3000 --name=grafana --net=my_bridge grafana/grafana:6.5.0-ubuntu
 
