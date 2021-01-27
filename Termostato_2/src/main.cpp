@@ -74,10 +74,12 @@ void mqttConnect()
    }
 }
 
-static enum { ST_RED,
-              ST_GREEN,
-              ST_BLUE,
-              ST_NONE } next_state;
+static enum 
+{  ST_RED,
+   ST_GREEN,
+   ST_BLUE,
+   ST_NONE 
+} next_state;
 
 TaskHandle_t t2;
 TaskHandle_t t3;
@@ -149,13 +151,11 @@ void vTask2(void *pvParam)
    for (;;)
    {
       temperature_val = dht.readTemperature();
-      //Serial.printf("Temp. actual = %f\n",temperature_val);
 
       portBASE_TYPE st = xQueueSendToBack(q2_temperature, &temperature_val, xticks);
       if (st != pdPASS)
          Serial.printf("No puedo enviar Temp Actual\r\n");
 
-      //delay(500);
       vTaskDelay(250 / portTICK_RATE_MS);
    }
    vTaskDelete(NULL);
@@ -174,10 +174,6 @@ void vTask3(void *pvParam)
          if (temp_val_rec > fireTemperature)
          {
             Serial.println("Se enciende el aspersor");
-         }
-         else
-         {
-            ;
          }
       }
       vTaskDelay(250 / portTICK_RATE_MS);
@@ -218,11 +214,28 @@ void vTaskAirQuality(void *pvParam)
    vTaskDelete(NULL);
 }
 
+void vTaskHumidity(void *pvParam)
+{
+   const portTickType xticks = 250 / portTICK_RATE_MS;
+   float humidity_val = 0.0;
+
+   for (;;)
+   {
+      humidity_val = dht.readHumidity();
+      
+      xQueueSendToBack(q1_humidity, &humidity_val, xticks);
+      
+      vTaskDelay(250 / portTICK_RATE_MS);
+   }
+   vTaskDelete(NULL);
+}
+
 void vTaskSendMQTT(void *pvParam)
 {
    float temp_val_rec;
    float air_val_rec;
    float hum_val_rec;
+   bool fire = false;
    const portTickType xticks = 1000 / portTICK_RATE_MS;
 
    for (;;)
@@ -236,34 +249,23 @@ void vTaskSendMQTT(void *pvParam)
       portBASE_TYPE st_air;
       st_air = xQueueReceive(q3_air, &air_val_rec, xticks);
 
+      if(temp_val_rec > 10)
+      {
+         fire = true;
+      }
+      else
+      {
+         fire = false;
+      }
+
       if (st_temp == pdPASS && st_air == pdPASS && st_hum == pdPASS)
       {
          String jsonData = "{\"temperatura\":" + (String)temp_val_rec + ",\"calidadAire\":" 
-               + (String)air_val_rec + + ",\"humedad\":" + (String)hum_val_rec + "}";
+               + (String)air_val_rec + ",\"humedad\":" + (String)hum_val_rec + + ",\"incendio\":" 
+               + (String)fire + "}";
          client.publish(TOPIC, jsonData.c_str());
       }
       vTaskDelay(1000 / portTICK_RATE_MS);
-   }
-   vTaskDelete(NULL);
-}
-
-void vTaskHumidity(void *pvParam)
-{
-   const portTickType xticks = 250 / portTICK_RATE_MS;
-   float humidity_val = 0.0;
-
-   for (;;)
-   {
-      humidity_val = dht.readHumidity();
-      Serial.printf("Humedad: %f", humidity_val);
-
-      /*portBASE_TYPE st_hum = xQueueSendToBack(q1_humidity, &humidity_val, xticks);
-      if (st_hum != pdPASS)
-      {
-         Serial.printf("No puedo enviar humedad Actual\r\n");
-      }*/
-      
-      vTaskDelay(250 / portTICK_RATE_MS);
    }
    vTaskDelete(NULL);
 }
@@ -302,6 +304,7 @@ void setup()
    vTaskSuspend(t3);
    vTaskSuspend(t5);
    vTaskSuspend(t6);
+   vTaskSuspend(t7);
 
    next_state = ST_NONE;
 

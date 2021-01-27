@@ -16,3 +16,10 @@ docker run -v /home/fernando/Escritorio/Master/SCF/repo/scf-prototipo/confs/tele
 
 docker run -p 3000:3000 --name=grafana --net=my_bridge grafana/grafana:6.5.0-ubuntu
 
+
+---------------------------------------------------------------
+sudo docker run -p 8086:8086 --name=influxdb --net=my_bridge influxdbcustom:0.1
+
+sudo docker run -p 3000:3000 --name=grafana --net=my_bridge grafanacustom:0.1
+
+
