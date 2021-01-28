@@ -3,4 +3,13 @@ Cambios necesarios:
 ✓ Revisar si añadir humedad
 ✓ Añadir paneles Grafana
 ✓ Investigar Telegraf: configuración, topics, envío de datos a diferentes tablas, etc.
-- Añadir docker para transformar protobuf to JSON
+✓ Refactorizar código para dejarlo limpio
+✓ Añadir aspersor-servo a la funcionalidad
+✓ Utilizar Node RED
+✓ Añadir docker para transformar protobuf to JSON
+✓ Limpiar registros BBDD
+- Comprobar servo motor
+- Ver técnicas de ahorro energético
+- Documentación
+- Escribir README tutorial
+- Vídeo
