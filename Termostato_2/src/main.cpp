@@ -172,14 +172,12 @@ void vTaskServo( void *pvParam )
          if( temp_val_rec > fireTemperature )
          {
             mcpwm_set_duty( MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 2.5 );
-            //mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 500);  //0.5ms - 0
-            vTaskDelay( 2000 );
-            mcpwm_set_duty( MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 7.5 );
-            //mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 1500); //1.5ms - 90
-            vTaskDelay( 2000 );
-            mcpwm_set_duty( MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 12.5 );
-            //mcpwm_set_duty_in_us(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 2500); //2.5ms - 180
-            vTaskDelay( 2000 );
+            vTaskDelay( 500 );
+            mcpwm_set_duty( MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 5 );
+            vTaskDelay( 500 );
+            mcpwm_set_duty( MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 10 );
+            vTaskDelay( 500 );
+            mcpwm_set_duty( MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 5 );
          }
       }
       vTaskDelay( 250 / portTICK_RATE_MS );
@@ -190,21 +188,22 @@ void vTaskServo( void *pvParam )
 void vTaskAirQuality( void *pvParam )
 {
    const portTickType xticks = 5000 / portTICK_RATE_MS;
-   float air_val = 0.0;
+   int air_val = 0;
 
    for( ;; )
    {
       air_val = analogRead( air );
       /* Transformamos valor de 0-100 */
+      Serial.printf( "Valor de la calidad del aire: %d\r\n", air_val );
       air_val /= 1023;
       air_val *= 100;
+      
 
       portBASE_TYPE st = xQueueSendToBack( q3_air, &air_val, xticks );
       if( st != pdPASS )
       {
          Serial.printf( "No puedo enviar Luz\r\n" );
-      }
-      Serial.printf( "Valor de luz: %d\r\n", (int)air_val );
+      }  
 
       if( (int)air_val > airQualityLimit )
       {
