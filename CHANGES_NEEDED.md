@@ -8,6 +8,8 @@ Cambios necesarios:
 ✓ Utilizar Node RED
 ✓ Añadir docker para transformar protobuf to JSON
 ✓ Limpiar registros BBDD
+- Comprobar servo motor
 - Ver técnicas de ahorro energético
 - Documentación
+- Escribir README tutorial
 - Vídeo
