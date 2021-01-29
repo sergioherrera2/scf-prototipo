@@ -18,7 +18,7 @@
 #define air A1
 #define onSwitch D2
 #define offSwitch D3
-#define TOPIC "1111111A/1/2/1"
+#define TOPIC "1111111A/1/1/1"
 #define BROKER_IP "192.168.1.13"
 #define BROKER_PORT 2883
 #define DHTPIN D4
@@ -169,7 +169,7 @@ void vTaskServo( void *pvParam )
       st_temp = xQueueReceive( q2_temperature, &temp_val_rec, xticks );
       if( st_temp == pdPASS )
       {
-         if( temp_val_rec > fireTemperature )
+         if( temp_val_rec > airQualityLimit )
          {
             mcpwm_set_duty( MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 2.5 );
             vTaskDelay( 500 );
@@ -205,7 +205,7 @@ void vTaskAirQuality( void *pvParam )
          Serial.printf( "No puedo enviar Luz\r\n" );
       }  
 
-      if( (int)air_val > airQualityLimit )
+      if( air_val > airQualityLimit )
       {
          next_state = ST_RED;
       }
@@ -238,7 +238,7 @@ void vTaskHumidity( void *pvParam )
 void vTaskSendMQTT( void *pvParam )
 {
    float temp_val_rec;
-   float air_val_rec;
+   int air_val_rec;
    float hum_val_rec;
    bool fire = false;
    const portTickType xticks = 1000 / portTICK_RATE_MS;
@@ -254,7 +254,7 @@ void vTaskSendMQTT( void *pvParam )
       portBASE_TYPE st_air;
       st_air = xQueueReceive( q3_air, &air_val_rec, xticks );
 
-      if( temp_val_rec > 50 )
+      if( temp_val_rec > 10 )
       {
          fire = true;
       }
