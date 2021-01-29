@@ -50,7 +50,7 @@ Una vez desplegado node-red vamos a un navegador y entramos en la dirección: lo
 
 ## 4. Ejecución nodo IoT
 
-Abrimos el proyecto de PlatformIO situado en el directorio "Termostato_2" en Visual Studio code, abrimos el archivo "main.cpp" y modificamos las siguientes lineas:
+Abrimos el proyecto de PlatformIO situado en el directorio "project" en Visual Studio code, abrimos el archivo "main.cpp" y modificamos las siguientes lineas:
 
 - 21 #define TOPIC "1111111A/1/1/1" -> El topic MQTT está representado de la forma <DNI Usuario>/<ID Inmueble>/<ID Habitación>/<ID dispositivo IoT>, modificar de acuerdo a si se quiere instalar en otra habitación otro dispositivo, para este ejemplo son válidos: "1111111A/1/1/1" y "1111111A/1/2/1"
 - 22 #define BROKER_IP "192.168.1.13" -> Sustituimos esta IP por la IP de nuestro equipo local
